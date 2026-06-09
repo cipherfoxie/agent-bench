@@ -59,7 +59,20 @@ agent-bench/
 
 ## Metrics & reporting
 
-Per cell (model × arm × task family): success rate, mean tool-calls, mean tokens (in / out / total), mean wallclock. `results/` JSON → a small `charts.py` (matplotlib) renders the comparison figures used in the articles.
+Per cell (model × arm × task family), two axes:
+
+**Speed / efficiency:** success rate (pass/fail gate), mean tool-calls, mean tokens (in / out / total), mean wallclock.
+
+**Quality (beyond "it passes"):** three objective KPIs, all computed without a judge model:
+- **Diff minimality** — changed lines + files vs a minimal reference patch (`git diff --stat`). Tests the "surgical edit" claim; smaller is better.
+- **Regression-free** — the *full* build+test suite passes after the edit, not just the task's targeted gate. Catches collateral damage.
+- **Lint/format clean** — no new clippy / eslint / ruff violations introduced vs the clean baseline.
+
+Quality KPIs apply to the **coding** task family. For **chat** tasks the quality measure is the fact-checklist pass rate (see caveman spec).
+
+**Deferred:** an LLM-judge quality rubric. It requires a neutral judge model (not in the test matrix) — Anthropic has no credit, and a local judge would be circular. Held as an optional later pass: blind to arm/model, rubric-anchored, reporting inter-arm deltas only, never as a headline. Run only once a neutral judge is funded/available.
+
+`results/` JSON → a small `charts.py` (matplotlib) renders the comparison figures used in the articles.
 
 ## Fairness controls (shared by all experiments)
 

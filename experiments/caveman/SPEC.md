@@ -40,6 +40,7 @@ Counts: coding 5×2×2×5 + chat 5×2×2×5 = **200 local runs**; Opus 5×2×3 +
 - **Total tokens** (input+output) — what actually matters for cost/context.
 - **Accuracy** — coding: build/test gate; chat: fact-checklist pass rate.
 - **Compliance** — did the model actually adopt caveman style? Heuristic: drop in mean output tokens-per-message / sentence length vs the off-arm. Catches "model ignored caveman."
+- **Quality (coding family)** — the three objective KPIs from [FRAMEWORK.md](../../FRAMEWORK.md): diff minimality, regression-free, lint/format clean. Here they answer a sharper question: *does compressing the agent's reasoning degrade the code it writes?* For chat tasks, the fact-checklist is the quality measure. LLM-judge deferred.
 
 ## Harness
 

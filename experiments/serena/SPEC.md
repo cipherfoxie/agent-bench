@@ -37,10 +37,18 @@ Tasks are designed to exercise semantic navigation/editing (Serena's claimed str
 
 ## Metrics (recorded per run)
 
+Speed / efficiency:
 - **Success** (pass/fail against the gate) → success rate % per cell. Primary metric.
 - **Tool calls / steps** → tests the "8–12 steps collapse into 1" claim.
 - **Tokens** (input+output) → promptfoo native (via the opencode provider).
 - **Wallclock** (seconds) → promptfoo native latency.
+
+Quality (objective, see [FRAMEWORK.md](../../FRAMEWORK.md)):
+- **Diff minimality** — changed lines/files vs minimal reference patch. Directly tests Serena's "surgical edit" claim.
+- **Regression-free** — full build+test suite passes, not just the targeted gate.
+- **Lint/format clean** — no new clippy/eslint/ruff violations.
+
+Deferred: LLM-judge rubric (no neutral judge available yet).
 
 ## Harness
 
