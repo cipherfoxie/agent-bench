@@ -1,0 +1,5 @@
+config.local.yaml
+node_modules/
+.promptfoo/
+results/raw/
+*.log

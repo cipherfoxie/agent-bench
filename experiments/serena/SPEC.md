@@ -39,24 +39,20 @@ Tasks are designed to exercise semantic navigation/editing (Serena's claimed str
 
 - **Success** (pass/fail against the gate) → success rate % per cell. Primary metric.
 - **Tool calls / steps** → tests the "8–12 steps collapse into 1" claim.
-- **Tokens** (input+output) → from `opencode export`.
-- **Wallclock** (seconds) → from `time`.
+- **Tokens** (input+output) → promptfoo native (via the opencode provider).
+- **Wallclock** (seconds) → promptfoo native latency.
 
 ## Harness
 
-`opencode run` headless, JSON export. Per run:
+Runs on the shared promptfoo-based harness — see [FRAMEWORK.md](../../FRAMEWORK.md). This experiment is just a promptfoo config (`experiments/serena/promptfooconfig.yaml`):
 
-1. `git checkout -- .` in the fixture repo (identical clean start).
-2. Ensure correct model is GPU-resident (`switch.sh mistral|qwen`); runs are grouped by model to minimize switching. Opus runs need no GPU.
-3. Toggle Serena via `opencode mcp` add/remove (or per-run config).
-4. `time opencode run --format json -m <model> --dir <fixture> "<task prompt>"` → capture stdout JSON + wallclock.
-5. Run the task's gate command → pass/fail.
-6. `opencode export <session>` → parse tool-call count + tokens.
-7. Append a row to `results/runs.jsonl`.
+- **Toggle type:** `mcp_servers`.
+- **arms:** `baseline` (`mcp_servers: []`) and `treatment` (`mcp_servers: [serena]`).
+- **providers:** the three models via the custom opencode provider.
+- **tests:** the 5 coding tasks from `tasks/`; gates run as exec asserts.
+- Serena is configured locally via `uvx` (stdio), no cloud.
 
-`runner/parse-results.py` aggregates JSONL → `results/summary.csv` + charts.
-
-Rejected alternative: driving the TUI by hand and reading numbers off screen — not reproducible, not scriptable.
+Rejected alternative: a bespoke per-run shell script, or driving the TUI by hand — not reproducible, more code, less credible than promptfoo.
 
 ## Fairness controls (credibility)
 
@@ -74,16 +70,9 @@ Rejected alternative: driving the TUI by hand and reading numbers off screen —
 - Qwen3.6 context is 32768; large tasks may truncate. Documented.
 - GPU mutex means local models are benchmarked sequentially, not concurrently.
 
-## Project layout (becomes public repo `github.com/cipherfoxie/serena-benchmark`)
+## Project layout
 
-```
-/data/projects/serena-benchmark/
-├── fixture/        TS + Rust + Python mini-repo + the 5 task starting states
-├── runner/         bench.sh + parse-results.py + tasks.yaml
-├── results/        raw runs.jsonl + summary.csv + charts
-├── SPEC.md         this file
-└── README.md       1:1 reproduction instructions
-```
+Part of the `agent-bench` repo (`github.com/cipherfoxie/agent-bench`). See [FRAMEWORK.md](../../FRAMEWORK.md) for the full layout. This experiment owns `experiments/serena/` (this spec + `promptfooconfig.yaml`) and shares `fixture/`, `tasks/`, `provider/`, `results/`.
 
 ## Article (sovgrid.org, English)
 
