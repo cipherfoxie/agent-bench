@@ -38,12 +38,12 @@ Per run it records: success against a hard gate (build, typecheck, fact checklis
 
 The agent-tool ecosystem runs on install counts and claims. Serena's pitch is semantic edits; caveman's pitch is "~75% token savings". Both are top-charts popular. Measured on real self-hosted models with hard gates, one turned out to be a guardrail rather than a turbo, and the other saved a third of the claim at best and *cost* money on every Claude model tested. You only learn that by measuring, and you can only trust it if every number is reproducible from raw data.
 
-Findings so far (full write-ups linked):
+Findings so far (full write-ups on [sovgrid.org](https://sovgrid.org/blog/agent-bench-pillar/)):
 
-| Tool | Verdict | Headline number |
-|---|---|---|
-| [Serena](results/VERDICT.md) (MCP, semantic code tools) | SITUATIONAL | weak model native: 0/3 on ambiguous rename, broken result still compiled; with Serena 1/3, failure mode shifts from "confidently wrong" to "incompletely right" |
-| [caveman](results/FINDINGS-caveman.md) (skill, token compression) | SKIP | claim 75%, measured −31% local / −33% best-case Claude / **+18% on Fable 5**; never cheaper in dollars |
+| Tool | Verdict | Headline number | Write-up |
+|---|---|---|---|
+| [Serena](https://github.com/oraios/serena) (MCP, semantic code tools) | SITUATIONAL | weak model native: 0/3 on ambiguous rename, broken result still compiled; with Serena 1/3, failure mode shifts from "confidently wrong" to "incompletely right" | [sovgrid.org/blog/serena-local-benchmark/](https://sovgrid.org/blog/serena-local-benchmark/) |
+| [caveman](https://github.com/JuliusBrussee/caveman) (skill, token compression) | SKIP | claim 75%, measured -31% local / -33% best-case Claude / **+18% on Fable 5**; never cheaper in dollars | [sovgrid.org/blog/caveman-local-benchmark/](https://sovgrid.org/blog/caveman-local-benchmark/) |
 
 ## Reproduce
 
@@ -68,6 +68,10 @@ node runner/aggregate.js <runs-file-suffix>
 Raw data for every published number is in `results/*.jsonl`.
 
 ## Layout
+
+## Series
+
+The methodology article ([sovgrid.org/blog/agent-bench-pillar/](https://sovgrid.org/blog/agent-bench-pillar/)) explains the design. Published spokes so far: [Serena](https://sovgrid.org/blog/serena-local-benchmark/) · [caveman](https://sovgrid.org/blog/caveman-local-benchmark/). The series continues through the Claude marketplace top charts — submit a benchmark result via issue or PR.
 
 ```
 runner/            bench.js (matrix) · aggregate.js · smoke.js · arms.js · tasks.js

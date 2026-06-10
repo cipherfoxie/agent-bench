@@ -1,8 +1,16 @@
 ---
 title: "agent-bench: stop trusting install counts, start measuring your agent's tools"
-series: agent-bench (pillar)
-status: DRAFT, review + leak-grep + prepublish-check before deploy
-target: sovgrid.org (pillar article for the series)
+description: "I built a small, dependency-free harness that answers one question with numbers instead of vibes: does this enhancement make my agent measurably better, on my models, on my tasks? Here is the method, what I found, and why deterministic gates are the whole point."
+date: 2026-06-10
+tags: ["strategy", "agents", "engineering-honesty", "opencode"]
+quality:
+  score: 230.0
+  style: "technical_analysis"
+  content_class: "Durable"
+  word_count: 891
+  code_blocks: 1
+  version_refs: 0
+  file_paths: 0
 ---
 
 # agent-bench: stop trusting install counts, start measuring your agent's tools
@@ -29,7 +37,7 @@ Two case studies, both fully written up:
 
 **[Serena](/blog/serena-local-benchmark/)** (semantic code tools, MCP): a strong local model gained nothing on refactor tasks and paid 15-158% more input tokens for the privilege. The weak model was not fixed by it either, but its failure mode changed from "confidently wrong and it compiles" to "incompletely right", which is a real safety difference. Verdict: SITUATIONAL, a guardrail rather than a turbo.
 
-**[caveman](/blog/caveman-local-benchmark/)** (token-compression skill): claims ~75% savings, measured −31% on local models and −33% best-case on Claude, *+18% on Fable 5* (it speaks fluent caveman and uses the saved words to say more things), and in measured dollars it was never cheaper on any model, because the injected instruction is billed on every request. Verdict: SKIP.
+**[caveman](/blog/caveman-local-benchmark/)** (token-compression skill): claims ~75% savings, measured -31% on local models and -33% best-case on Claude, +18% on Fable 5 (it speaks fluent caveman and uses the saved words to say more things), and in measured dollars it was never cheaper on any model, because the injected instruction is billed on every request. Verdict: SKIP.
 
 Both write-ups follow the same template: a verdict box up top (ADOPT / SITUATIONAL / SKIP, install-if, skip-if, cost, and a mandatory "Do I run it myself?" disclosure), then methodology, results, limitations, and a reproduce section. Negative results ship with the same prominence as positive ones. That is the series contract.
 
@@ -48,6 +56,14 @@ EXPERIMENT=serena ARMS=baseline,serena TASK_NAME=ts-ambiguous N=5 node runner/be
 ```
 
 If you benchmark something from the ecosystem's top charts with it, I would genuinely like to see the numbers, especially if they disagree with mine.
+
+## What is next in the series
+
+The two case studies so far cover the top of the Claude marketplace skills and MCP directories at the time of writing. The series continues through the charts in the same format: one tool at a time, same harness, same verdict scale, no skipping negative results.
+
+Candidates on the list: memory MCPs (persistent context across sessions), browser automation MCPs (tools that give agents a real browser), and a few skills that make bolder efficiency claims than caveman did. The question is always the same: does this thing actually help on the tasks I run, or is the install count doing the marketing?
+
+If you benchmark something from the top charts before I do and want to submit numbers, the harness is generic and the AGENTS.md explains the contract. Open an issue or PR on the repo.
 
 ---
 
