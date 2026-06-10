@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
-const rows = readFileSync(`${ROOT}/results/runs.jsonl`, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
+const taskName = process.argv[2] || 'ts-rename';
+const rows = readFileSync(`${ROOT}/results/runs-${taskName}.jsonl`, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
 
 const mean = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
 const r1 = (x) => Math.round(x * 10) / 10;
@@ -30,12 +31,12 @@ for (const [k, rs] of Object.entries(cells)) {
 }
 summary.sort((a, b) => a.model.localeCompare(b.model) || a.arm.localeCompare(b.arm));
 
-writeFileSync(`${ROOT}/results/summary.json`, JSON.stringify(summary, null, 2));
+writeFileSync(`${ROOT}/results/summary-${taskName}.json`, JSON.stringify(summary, null, 2));
 
 // markdown table
 const cols = ['model', 'arm', 'n', 'successRate', 'meanToolCalls', 'meanTokensIn', 'meanTokensOut', 'meanWallS', 'meanFilesChanged', 'meanLinesChanged', 'regressionFreeRate', 'lintCleanRate'];
 const hdr = `| ${cols.join(' | ')} |\n| ${cols.map(() => '---').join(' | ')} |`;
 const body = summary.map(s => `| ${cols.map(c => s[c]).join(' | ')} |`).join('\n');
-const md = `# Serena benchmark — ts-rename results\n\n_${rows.length} runs_\n\n${hdr}\n${body}\n`;
-writeFileSync(`${ROOT}/results/summary.md`, md);
+const md = `# Serena benchmark — ${taskName} results\n\n_${rows.length} runs_\n\n${hdr}\n${body}\n`;
+writeFileSync(`${ROOT}/results/summary-${taskName}.md`, md);
 console.log(md);

@@ -2,6 +2,7 @@ import { execFileSync, execSync } from 'node:child_process';
 import { appendFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { runOpencode, cleanupWorkdir } from './lib/run-opencode.js';
 import { ARMS } from './arms.js';
+import { TASKS } from './tasks.js';
 
 const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const SWITCH = '/data/scripts/llm/switch.sh';
@@ -13,20 +14,11 @@ const MODELS = [
 ];
 const ARM_NAMES = ['baseline', 'serena'];
 const N = Number(process.env.N || 5);
-const TASK = {
-  name: 'ts-rename',
-  fixture: `${ROOT}/fixture/ts-rename`,
-  prompt: 'Rename the function addNumbers to sum everywhere in this TypeScript project. The project must still type-check.',
-  gate: `${ROOT}/tasks/ts-rename/gate.sh`,
-  quality: {
-    diff: `${ROOT}/scripts/quality/diff-stat.sh`,
-    regression: `${ROOT}/scripts/quality/regression.sh`,
-    lint: `${ROOT}/scripts/quality/lint-clean.sh`,
-  },
-};
+const TASK = TASKS[process.env.TASK_NAME || 'ts-rename'];
+if (!TASK) { console.error(`unknown TASK_NAME; have: ${Object.keys(TASKS)}`); process.exit(1); }
 
 const RESULTS_DIR = `${ROOT}/results`;
-const RUNS = `${RESULTS_DIR}/runs.jsonl`;
+const RUNS = `${RESULTS_DIR}/runs-${TASK.name}.jsonl`;
 mkdirSync(RESULTS_DIR, { recursive: true });
 
 function sh(script, wd) {

@@ -1,0 +1,17 @@
+import { applyDiscount } from './discount.js';
+import { priceFeature1 } from './features/feature1.js';
+import { priceFeature2 } from './features/feature2.js';
+import { priceFeature3 } from './features/feature3.js';
+import { priceFeature4 } from './features/feature4.js';
+import { priceFeature5 } from './features/feature5.js';
+import { priceFeature6 } from './features/feature6.js';
+import { priceFeature7 } from './features/feature7.js';
+import { priceFeature8 } from './features/feature8.js';
+import { priceFeature9 } from './features/feature9.js';
+import { priceFeature10 } from './features/feature10.js';
+import { priceFeature11 } from './features/feature11.js';
+import { priceFeature12 } from './features/feature12.js';
+import { priceFeature13 } from './features/feature13.js';
+import { priceFeature14 } from './features/feature14.js';
+const demo = applyDiscount(100, 10);
+console.log(demo, priceFeature1(100),priceFeature2(100),priceFeature3(100),priceFeature4(100),priceFeature5(100),priceFeature6(100),priceFeature7(100),priceFeature8(100),priceFeature9(100),priceFeature10(100),priceFeature11(100),priceFeature12(100),priceFeature13(100),priceFeature14(100), );
