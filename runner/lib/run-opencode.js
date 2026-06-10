@@ -20,7 +20,7 @@ export function runOpencode(opts) {
   const { model, fixturePath, arm = {}, prompt, timeoutMs = 600000 } = opts;
   const wd = prepareWorkdir(fixturePath);
   const cfgPath = join(wd, '.arm-opencode.json');
-  writeArmConfig(cfgPath, arm);
+  writeArmConfig(cfgPath, arm, wd);
   return new Promise((resolve) => {
     const start = Date.now();
     const child = spawn(
