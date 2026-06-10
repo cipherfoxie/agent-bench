@@ -16,11 +16,11 @@ I measured it. The short answer is more interesting than yes or no.
 
 | | |
 |---|---|
-| **Verdict** | SITUATIONAL — a guardrail for weak models, overhead for strong ones |
+| **Verdict** | SITUATIONAL: a guardrail for weak models, overhead for strong ones |
 | **Install if** | your agent runs on a smaller model that has to do multi-file refactors, and a silently wrong edit would hurt you |
 | **Skip if** | your daily driver is a capable model (Qwen3.6-class or better); it solved every task, including the ambiguous one, without Serena |
 | **Cost** | one `uv tool install` + `serena init`; measured +15-158% input tokens on tasks the model could already do |
-| **Do I run it?** | No — installed for this benchmark, not wired into my daily agent. My model did not need it. I would revisit the day I depend on a weaker model for code edits. |
+| **Do I run it?** | No. Installed for this benchmark, not wired into my daily agent. My model did not need it. I would revisit the day I depend on a weaker model for code edits. |
 
 ## Setup
 

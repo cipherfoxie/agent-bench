@@ -15,11 +15,11 @@ I run my agents against self-hosted models, where every token is latency and ene
 
 | | |
 |---|---|
-| **Verdict** | SKIP for self-hosted agents — measured savings are a third of the claim, and short answers get net *more* expensive |
+| **Verdict** | SKIP for self-hosted agents: measured savings are a third of the claim, and short answers get net *more* expensive |
 | **Install if** | you mostly generate long-form prose answers (1k+ tokens) and want them shorter and faster |
 | **Skip if** | you run a local model (already terse), or your agent mostly does coding work (tokens live in tool I/O, not prose) |
 | **Cost** | zero setup, but the injected instruction adds ~1,000 input tokens to every single request |
-| **Do I run it?** | No — the math only works against verbose baselines, and my local models do not have one. |
+| **Do I run it?** | No. The math only works against verbose baselines, and my local models do not have one. |
 
 ## What it is
 
@@ -61,7 +61,7 @@ Coding (success / mean tool calls / mean input tokens):
 
 ## Do I run it myself?
 
-No. I tested it because 200k installs deserve a number, and the number is −31% with a 1k-token surcharge per request. On my stack, where the models are already terse and most agent tokens are tool I/O, it is a net loss. If I were paying per token against a verbose frontier API for long-form chat, I would test it there before dismissing it — that experiment (sonnet, opus, fable via the same harness) is prepared and queued.
+No. I tested it because 200k installs deserve a number, and the number is −31% with a 1k-token surcharge per request. On my stack, where the models are already terse and most agent tokens are tool I/O, it is a net loss. If I were paying per token against a verbose frontier API for long-form chat, I would test it there before dismissing it; that experiment (sonnet, opus, fable via the same harness) is prepared and queued.
 
 ## Limitations
 
