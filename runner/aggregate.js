@@ -9,15 +9,15 @@ const r1 = (x) => Math.round(x * 10) / 10;
 
 const cells = {};
 for (const r of rows) {
-  const k = `${r.model}__${r.arm}`;
+  const k = `${r.model}__${r.arm}__${r.task || '-'}`;
   (cells[k] ??= []).push(r);
 }
 
 const summary = [];
 for (const [k, rs] of Object.entries(cells)) {
-  const [model, arm] = k.split('__');
+  const [model, arm, task] = k.split('__');
   summary.push({
-    model, arm, n: rs.length,
+    model, task, arm, n: rs.length,
     successRate: r1(100 * mean(rs.map(r => r.success ? 1 : 0))),
     meanToolCalls: r1(mean(rs.map(r => r.toolCalls))),
     meanTokensIn: Math.round(mean(rs.map(r => r.tokensIn))),
@@ -29,12 +29,12 @@ for (const [k, rs] of Object.entries(cells)) {
     lintCleanRate: r1(100 * mean(rs.map(r => r.lintClean ? 1 : 0))),
   });
 }
-summary.sort((a, b) => a.model.localeCompare(b.model) || a.arm.localeCompare(b.arm));
+summary.sort((a, b) => a.model.localeCompare(b.model) || a.task.localeCompare(b.task) || a.arm.localeCompare(b.arm));
 
 writeFileSync(`${ROOT}/results/summary-${taskName}.json`, JSON.stringify(summary, null, 2));
 
 // markdown table
-const cols = ['model', 'arm', 'n', 'successRate', 'meanToolCalls', 'meanTokensIn', 'meanTokensOut', 'meanWallS', 'meanFilesChanged', 'meanLinesChanged', 'regressionFreeRate', 'lintCleanRate'];
+const cols = ['model', 'task', 'arm', 'n', 'successRate', 'meanToolCalls', 'meanTokensIn', 'meanTokensOut', 'meanWallS', 'meanFilesChanged', 'meanLinesChanged', 'regressionFreeRate', 'lintCleanRate'];
 const hdr = `| ${cols.join(' | ')} |\n| ${cols.map(() => '---').join(' | ')} |`;
 const body = summary.map(s => `| ${cols.map(c => s[c]).join(' | ')} |`).join('\n');
 const md = `# Serena benchmark — ${taskName} results\n\n_${rows.length} runs_\n\n${hdr}\n${body}\n`;

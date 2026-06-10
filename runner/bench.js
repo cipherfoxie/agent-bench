@@ -12,13 +12,16 @@ const MODELS = [
   { id: 'local-qwen/qwen3.6-35b', sw: 'qwen' },
   { id: 'local-sglang/Mistral-Small-4', sw: 'mistral' },
 ];
-const ARM_NAMES = ['baseline', 'serena'];
+const ARM_NAMES = (process.env.ARMS || 'baseline,serena').split(',');
 const N = Number(process.env.N || 5);
-const TASK = TASKS[process.env.TASK_NAME || 'ts-rename'];
-if (!TASK) { console.error(`unknown TASK_NAME; have: ${Object.keys(TASKS)}`); process.exit(1); }
+const EXPERIMENT = process.env.EXPERIMENT || 'serena';
+const TASK_LIST = (process.env.TASK_NAME || 'ts-rename').split(',').map(t => {
+  if (!TASKS[t]) { console.error(`unknown task ${t}; have: ${Object.keys(TASKS)}`); process.exit(1); }
+  return TASKS[t];
+});
 
 const RESULTS_DIR = `${ROOT}/results`;
-const RUNS = `${RESULTS_DIR}/runs-${TASK.name}.jsonl`;
+const RUNS = `${RESULTS_DIR}/runs-${EXPERIMENT}-${TASK_LIST.map(t => t.name).join('+')}.jsonl`;
 mkdirSync(RESULTS_DIR, { recursive: true });
 
 function sh(script, wd) {
@@ -41,39 +44,49 @@ async function ensureModel(sw) {
   console.error(`[gpu] ${sw} did not come up`); return false;
 }
 
-async function oneRun(model, armName, trial) {
+async function oneRun(TASK, model, armName, trial) {
   const r = await runOpencode({ model: model.id, fixturePath: TASK.fixture, arm: ARMS[armName], prompt: TASK.prompt, timeoutMs: 360000 });
-  const gate = sh(TASK.gate, r.workdir);
-  const diff = sh(TASK.quality.diff, r.workdir);
-  const reg = sh(TASK.quality.regression, r.workdir);
-  const lint = sh(TASK.quality.lint, r.workdir);
-  let d = {}; try { d = JSON.parse(diff.out || '{}'); } catch {}
-  cleanupWorkdir(r.workdir);
-  return {
-    ts: new Date().toISOString(), experiment: 'serena', task: TASK.name,
+  let row = {
+    ts: new Date().toISOString(), experiment: EXPERIMENT, task: TASK.name,
     model: model.id, arm: armName, trial,
-    success: gate.code === 0, gate: gate.out, exitCode: r.exitCode,
+    exitCode: r.exitCode,
     toolCalls: r.parsed.toolCallCount, toolNames: r.parsed.toolNames,
     tokensIn: r.parsed.tokens.input, tokensOut: r.parsed.tokens.output, tokensTotal: r.parsed.tokens.total,
-    wallMs: r.wallMs,
-    filesChanged: d.filesChanged ?? null, linesChanged: d.linesChanged ?? null,
-    regressionOk: reg.code === 0, lintClean: lint.code === 0,
-    errors: r.parsed.errors,
+    wallMs: r.wallMs, errors: r.parsed.errors,
   };
+  if (TASK.type === 'chat') {
+    // chat family: success = every checklist fact present in the final output
+    const missing = TASK.checklist.filter(re => !re.test(r.parsed.output));
+    row = { ...row, success: missing.length === 0, gate: missing.length ? `MISSING_${missing.length}` : 'PASS',
+            outputChars: r.parsed.output.length, filesChanged: null, linesChanged: null, regressionOk: null, lintClean: null };
+  } else {
+    const gate = sh(TASK.gate, r.workdir);
+    const diff = sh(TASK.quality.diff, r.workdir);
+    const reg = sh(TASK.quality.regression, r.workdir);
+    const lint = sh(TASK.quality.lint, r.workdir);
+    let d = {}; try { d = JSON.parse(diff.out || '{}'); } catch {}
+    row = { ...row, success: gate.code === 0, gate: gate.out,
+            filesChanged: d.filesChanged ?? null, linesChanged: d.linesChanged ?? null,
+            regressionOk: reg.code === 0, lintClean: lint.code === 0 };
+  }
+  cleanupWorkdir(r.workdir);
+  return row;
 }
 
-console.error(`[bench] serena/${TASK.name}  models=${MODELS.map(m=>m.sw)}  arms=${ARM_NAMES}  N=${N}  total=${MODELS.length*ARM_NAMES.length*N}`);
+console.error(`[bench] ${EXPERIMENT}/${TASK_LIST.map(t=>t.name)}  models=${MODELS.map(m=>m.sw)}  arms=${ARM_NAMES}  N=${N}  total=${MODELS.length*ARM_NAMES.length*N*TASK_LIST.length}`);
 writeFileSync(RUNS, '');                    // fresh run log
 let done = 0;
 for (const model of MODELS) {               // group by model -> minimize GPU switches
   const up = await ensureModel(model.sw);
   if (!up) { console.error(`[bench] skipping ${model.id} (engine down)`); continue; }
-  for (const armName of ARM_NAMES) {
-    for (let t = 1; t <= N; t++) {
-      const row = await oneRun(model, armName, t);
-      appendFileSync(RUNS, JSON.stringify(row) + '\n');
-      done++;
-      console.error(`[${done}] ${model.sw}/${armName} #${t}  success=${row.success} tools=${row.toolCalls} tokIn=${row.tokensIn} diff=${row.filesChanged}f/${row.linesChanged}l ${row.wallMs}ms`);
+  for (const TASK of TASK_LIST) {
+    for (const armName of ARM_NAMES) {
+      for (let t = 1; t <= N; t++) {
+        const row = await oneRun(TASK, model, armName, t);
+        appendFileSync(RUNS, JSON.stringify(row) + '\n');
+        done++;
+        console.error(`[${done}] ${model.sw}/${TASK.name}/${armName} #${t}  success=${row.success} tools=${row.toolCalls} tokOut=${row.tokensOut} ${row.wallMs}ms`);
+      }
     }
   }
 }
