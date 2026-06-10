@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: harness + article hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: JS syntax check
+        run: find runner -name "*.js" -exec node --check {} \;
+
+      - name: Gate and quality script syntax
+        run: |
+          find tasks -name "gate.sh" -exec bash -n {} \;
+          find scripts -name "*.sh" -exec bash -n {} \;
+
+      - name: No em-dashes in published articles
+        run: |
+          # TEMPLATE.md is internal; the house rule covers published write-ups
+          if grep -rl $'—' article/20*.md 2>/dev/null; then
+            echo "FAIL: em-dash found, use comma, period, or parens"
+            exit 1
+          fi
+          echo "OK: no em-dashes"
+
+      - name: Generic PII patterns in articles
+        run: |
+          # Generic safety net only. Operator-specific deny-lists live in the
+          # private publishing pipeline, never in a public workflow.
+          if grep -rnE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}' article/20*.md 2>/dev/null; then
+            echo "FAIL: IP address or email found in article"
+            exit 1
+          fi
+          echo "OK: no generic PII patterns"
+
+      - name: Verdict box present in each article
+        run: |
+          fail=0
+          for f in article/20*.md; do
+            [ -f "$f" ] || continue
+            grep -q "Verdict" "$f" || { echo "FAIL: no Verdict box in $f"; fail=1; }
+          done
+          exit $fail
+
+      - name: Raw results present
+        run: test -f results/VERDICT.md
