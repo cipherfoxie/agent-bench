@@ -8,10 +8,14 @@ const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
 const SWITCH = '/data/scripts/llm/switch.sh';
 
 // --- run configuration (Serena deep-dive, ts-rename, tiered) ---
-const MODELS = [
+const ALL_MODELS = [
   { id: 'local-qwen/qwen3.6-35b', sw: 'qwen' },
   { id: 'local-sglang/Mistral-Small-4', sw: 'mistral' },
 ];
+// MODELS_FILTER=mistral runs only that engine (e.g. clean redo of one half)
+const MODELS = process.env.MODELS_FILTER
+  ? ALL_MODELS.filter(m => m.sw === process.env.MODELS_FILTER)
+  : ALL_MODELS;
 const ARM_NAMES = (process.env.ARMS || 'baseline,serena').split(',');
 const N = Number(process.env.N || 5);
 const EXPERIMENT = process.env.EXPERIMENT || 'serena';
