@@ -43,3 +43,13 @@ Open follow-up (runner prepared, not yet run): the same A/B on Claude models (so
 - Raw: `results/runs-caveman-final.jsonl` (30 qwen + 30 mistral clean rows; contaminated mistral half discarded, see `results/NIGHT-REPORT.md` + healthcheck finding in the sovereignty audit).
 - Summary: `results/summary-caveman-final.{md,json}`. Skill source: `JuliusBrussee/caveman` skills/caveman/SKILL.md @073d6bb (claims ~75%; repo README claims 65%).
 - Injection mechanism: AGENTS.md in workdir (verified; opencode project `opencode.json` `instructions` is not honored).
+
+## Addendum 2026-06-10: Claude A/B (54 runs, runner claude-chat.js)
+
+| model | baseline out | caveman out | Δ | cost base | cost caveman |
+|---|---|---|---|---|---|
+| Sonnet 4.6 | 119 | 82 | −31% | $0.187 | $0.196 |
+| Opus 4.8 | 454 | 307 | −33% | $0.554 | $0.555 |
+| Fable 5 | 301 | 355 | **+18%** | $1.087 | $1.178 |
+
+All 54 runs passed the fact checklists. Best case −33% (Opus). Fable complies with the style but compensates with extra substance → longer. **Measured dollar cost: caveman never cheaper on any Claude model** (instruction billed every request). The 65-75% claim materialized on none of five models across two worlds.

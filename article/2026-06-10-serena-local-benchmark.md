@@ -58,7 +58,7 @@ Same 100% success in every cell, same surgical 3-files / 10-lines patch in every
 
 If your refactor is something `sed` could do, Serena is not earning its context window.
 
-## The ambiguous task: this is where it gets interesting
+## The ambiguous task: where every wrong answer compiled
 
 Here are the numbers that made the whole exercise worth it (N=3):
 
@@ -98,3 +98,7 @@ The harness is generic. Pointing it at another MCP or another skill is a config 
 ## Reproduce it
 
 Repo: [agent-bench](https://github.com/cipherfoxie/agent-bench). Serena: [github.com/oraios/serena](https://github.com/oraios/serena), [marketplace listing](https://claudemarketplaces.com/mcp/oraios/serena). Raw runs and per-task summaries are under `results/`.
+
+---
+
+*Part of the **agent-bench** series: popular agent enhancements (MCP servers, skills, whatever promises to make your agent better), measured with deterministic gates instead of vibes. Same harness, same verdict scale (ADOPT / SITUATIONAL / SKIP), every result reproducible from the repo. Next: the caveman skill and its 75% token-saving claim, tested on local models and on Claude. Follow via RSS or Nostr.*
