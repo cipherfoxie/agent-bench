@@ -20,7 +20,7 @@ agent-bench exists to replace vibes with numbers. **Honesty beats advocacy.** A 
 
 6. **No "Generated with Claude Code" / "Co-Authored-By: Claude" trailers** in commits intended for GitHub.
 
-7. **No operator-identity or host internals** in tracked files: no real names, no private hostnames, no internal absolute paths, no internal IPs. Host specifics go through env vars (`MODELS`, `SWITCH_CMD`) or gitignored local config.
+7. **No operator-identity or host internals** in tracked files: no real names, no private hostnames, no internal absolute paths, no internal IPs. Host specifics go through env vars (`MODELS`, `SWITCH_CMD`) or gitignored local config. **This includes deny-list regexes:** a public CI step that greps for the secret strings *is* the leak. Identity checks live in the private publishing pipeline only; public CI gets generic patterns (any IP, any email) at most.
 
 8. **Two opencode footguns, never reintroduce:** `opencode run` needs `stdin: 'ignore'` (blocks forever on open stdin); per-arm isolation goes through `OPENCODE_CONFIG`, and prompt injection through `AGENTS.md` in the workdir (project `opencode.json` `instructions` is silently ignored).
 
