@@ -1,14 +1,16 @@
-import { spawn } from 'node:child_process';
-import { mkdtempSync, cpSync, rmSync, writeFileSync } from 'node:fs';
+import { spawn, execSync } from 'node:child_process';
+import { mkdtempSync, cpSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { writeArmConfig } from './arm-config.js';
 import { parseRun } from './parse-run.js';
 
-// Copy fixture (incl .git, so gate/diff work) into a throwaway workdir.
+// Copy fixture (plain files) into a throwaway workdir and make it a fresh git
+// repo at a clean baseline, so the gate and diff-stat work per run.
 export function prepareWorkdir(fixturePath) {
   const wd = mkdtempSync(join(tmpdir(), 'ab-wd-'));
-  cpSync(fixturePath, wd, { recursive: true });
+  cpSync(fixturePath, wd, { recursive: true, filter: (s) => !s.split('/').includes('.git') });
+  execSync('git init -q && git add -A && git -c user.email=b@b -c user.name=b commit -q -m base', { cwd: wd });
   return wd;
 }
 
