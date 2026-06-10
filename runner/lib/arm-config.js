@@ -17,6 +17,10 @@ export function writeArmConfig(outPath, arm, workdir = '') {
     permission: g.permission || {},   // preserve auto-approve behavior for edits
     mcp,
   };
+  // Mistral-Small-4 has a 32768 context; opencode otherwise requests 32000 completion
+  // tokens (input + 32000 > 32768 -> reject). Cap output so requests fit.
+  const ms = cfg.provider?.['local-sglang']?.models?.['Mistral-Small-4'];
+  if (ms) ms.limit = { context: 32768, output: 4096 };
   writeFileSync(outPath, JSON.stringify(cfg, null, 2), 'utf8');
   return cfg;
 }
