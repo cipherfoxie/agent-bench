@@ -12,6 +12,16 @@ I run my coding agents against self-hosted models on a DGX Spark, not against a 
 
 I measured it. The short answer is more interesting than yes or no.
 
+## Verdict at a glance
+
+| | |
+|---|---|
+| **Verdict** | SITUATIONAL — a guardrail for weak models, overhead for strong ones |
+| **Install if** | your agent runs on a smaller model that has to do multi-file refactors, and a silently wrong edit would hurt you |
+| **Skip if** | your daily driver is a capable model (Qwen3.6-class or better); it solved every task, including the ambiguous one, without Serena |
+| **Cost** | one `uv tool install` + `serena init`; measured +15-158% input tokens on tasks the model could already do |
+| **Do I run it?** | No — installed for this benchmark, not wired into my daily agent. My model did not need it. I would revisit the day I depend on a weaker model for code edits. |
+
 ## Setup
 
 Everything runs locally. The agent is [opencode](https://opencode.ai) in headless mode, driving two models served on the Spark:
@@ -74,6 +84,10 @@ One more nuance on cost: on this task the token tax inverted. Baseline Mistral t
 Serena does not turn a weak local model into a strong one. On easy and mechanical refactors it is pure overhead with a token tax. Its one real benefit showed up exactly where its own pitch says it should, an ambiguous symbol that text-replace gets wrong, and even there it only stopped the weak model from confidently breaking unrelated code that still compiles. It did not make that model reliably correct. A capable model needs none of it.
 
 If you run a strong local model, you probably do not need Serena for refactors it can already reason through. If you run a weaker one, Serena is less a capability boost and more a guardrail against silent, compiling, semantically-wrong edits. That guardrail might still be worth it, because a green build on broken code is the expensive kind of bug.
+
+## Do I run it myself?
+
+No. I installed Serena for this benchmark (`uv tool install serena-agent`, `serena init`, wired into opencode as a per-run MCP), and the integration was painless. But my daily agent runs on Qwen3.6, and the data says that model gains nothing from it on refactor work, while every request pays the schema overhead. So it is not part of my stack today. Two things would change my mind: having to rely on a smaller model for agentic edits (then Serena is the guardrail against the compiles-but-wrong failure mode), or working in codebases large enough that native grep-and-read stops scaling. I will rerun this benchmark when either happens.
 
 ## Limitations
 
