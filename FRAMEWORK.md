@@ -1,5 +1,7 @@
 # agent-bench — Framework Design Spec
 
+> **Design history.** This document is the original design. The implemented harness became a lean direct Node runner (see `README.md` + `runner/`) instead of the promptfoo integration sketched here; final methodology and numbers live in `results/` and the published articles.
+
 **Date:** 2026-06-09
 **Purpose:** A reproducible, config-driven harness to measure whether a given **intervention** improves a coding agent on real tasks, across models, with the same metrics every time. An intervention is an MCP server, a skill/prompt, or a model setting. First two case studies: [Serena](experiments/serena/SPEC.md) (MCP) and [caveman](experiments/caveman/SPEC.md) (skill).
 
@@ -32,12 +34,12 @@ Every experiment compares **arms** (baseline vs treatment) over **models × task
 ## Host abstraction (public repo, zero leak)
 
 - `config.example.yaml` is committed with placeholders.
-- `config.local.yaml` is gitignored and holds host specifics: local SGLang endpoint URLs, provider ids, the `switch.sh` path, the GPU-mutex command.
-- Outsiders clone, copy the example, point it at their own stack, and reproduce. Stef/cipherfox infra stays private (leak rule).
+- `config.local.yaml` is gitignored and holds host specifics: local SGLang endpoint URLs, provider ids, the GPU-mutex command.
+- Outsiders clone, copy the example, point it at their own stack, and reproduce. operator infrastructure stays private.
 
 ## GPU mutex / serialization
 
-Local SGLang keeps one resident model (`switch.sh qwen|mistral|none`). `runner/run.sh` loops models: switch the resident model → run that model's whole promptfoo slice with `--max-concurrency 1` against the shared fixture → next model. Opus needs no GPU. Within a model, arms and tasks vary, so within-model wallclock is comparable (sole resident).
+Local SGLang keeps one resident model (a single-resident GPU mutex). `runner/run.sh` loops models: switch the resident model → run that model's whole promptfoo slice with `--max-concurrency 1` against the shared fixture → next model. Opus needs no GPU. Within a model, arms and tasks vary, so within-model wallclock is comparable (sole resident).
 
 ## Repo layout
 

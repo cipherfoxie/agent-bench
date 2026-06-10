@@ -1,5 +1,7 @@
 # agent-bench — Roadmap & scope
 
+> **Design history.** This document is the original design. The implemented harness became a lean direct Node runner (see `README.md` + `runner/`) instead of the promptfoo integration sketched here; final methodology and numbers live in `results/` and the published articles.
+
 **Date:** 2026-06-09
 
 ## Decisions
@@ -42,7 +44,7 @@ Tier "deep" = full task suite + N=5/10 + spoke article. Tier "sweep" = reduced t
 
 - **Pillar:** "Benchmarking Claude Code's top coding tools on self-hosted LLMs — methodology + leaderboard" (sovgrid.org, English). Holds the methodology, the full results table, links to every spoke.
 - **Spokes (deep):** Serena, caveman, (later) frontend-design. Each: full data, charts, verdict, links to GitHub/marketplace + back to pillar.
-- Rules per existing blog discipline: no em-dash, anti_ai_patterns, prepublish-check.sh, a11y, bidirectional crosslinks, Stef/cipherfox leak grep before publish.
+- Rules per existing blog discipline: no em-dash, anti_ai_patterns, prepublish-check.sh, a11y, bidirectional crosslinks, operator-identity leak grep before publish.
 - Mandatory links across the cluster: each tool's claudemarketplaces.com page + its GitHub/source + the agent-bench repo.
 
 ## Cost guardrail

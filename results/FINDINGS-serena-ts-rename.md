@@ -29,5 +29,5 @@ First real data from the agent-bench harness. One task (cross-file function rena
 - Harness: `runner/bench.js` (opencode headless, stdin-fixed, OPENCODE_CONFIG arm isolation), `runner/aggregate.js`.
 - Raw: `results/runs.jsonl` (20 rows). Summary: `results/summary.json` / `summary.md`.
 - Serena: `serena-agent` 1.5.3 via `uv tool install` + `serena init`, MCP context `ide-assistant`. The agent verifiably used `serena_rename_symbol` / `serena_replace_content`.
-- Models: `local-qwen/qwen3.6-35b` (:30001), `local-sglang/Mistral-Small-4` (:30000, output capped 4096). GPU mutex via `switch.sh`, prod model restored after.
+- Models: `local-qwen/qwen3.6-35b` (:30001), `local-sglang/Mistral-Small-4` (:30000, output capped 4096). GPU mutex via the GPU-mutex script, prod model restored after.
 - N=5; rates reported, no significance claims.

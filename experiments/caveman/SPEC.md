@@ -1,5 +1,7 @@
 # Caveman Benchmark — Design Spec
 
+> **Design history.** This document is the original design. The implemented harness became a lean direct Node runner (see `README.md` + `runner/`) instead of the promptfoo integration sketched here; final methodology and numbers live in `results/` and the published articles.
+
 **Date:** 2026-06-09
 **Goal:** Measure whether the popular [caveman](https://claudemarketplaces.com/skills) skill (`juliusbrussee/caveman`, ~203K installs, claims "~75% token reduction while preserving technical accuracy") actually saves tokens for *local* coding agents on a DGX Spark, where it saves them (chat vs agentic coding), and what it costs in accuracy.
 
@@ -75,7 +77,7 @@ Hook: "We tested the internet's favorite token-saving skill on local agents. Her
 
 - Same blog rules as Serena article (no em-dash, anti_ai_patterns, prepublish-check.sh, a11y, crosslinks). Crosslink to the Serena article (paired series).
 - Mandatory links: caveman skill page on claudemarketplaces.com, the skills directory, the fixture repo.
-- Privacy: Stef/cipherfox/Tor leak grep before push/publish.
+- Privacy: operator-identity leak grep before push/publish.
 
 ## Out of scope (YAGNI)
 

@@ -5,13 +5,18 @@ import { ARMS } from './arms.js';
 import { TASKS } from './tasks.js';
 
 const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
-const SWITCH = '/data/scripts/llm/switch.sh';
+// Optional GPU-mutex script: `SWITCH_CMD <engine>` loads a model, `SWITCH_CMD status`
+// reports `<engine> : RUNNING`. Leave unset if your models are always available.
+const SWITCH = process.env.SWITCH_CMD || '';
 
-// --- run configuration (Serena deep-dive, ts-rename, tiered) ---
-const ALL_MODELS = [
-  { id: 'local-qwen/qwen3.6-35b', sw: 'qwen' },
-  { id: 'local-sglang/Mistral-Small-4', sw: 'mistral' },
-];
+// Models as opencode provider ids. Override: MODELS="provider/model:engine,provider/model2:engine2"
+// where :engine is the SWITCH_CMD argument ('-' or omitted = no switching needed).
+const ALL_MODELS = (process.env.MODELS ||
+  'local-qwen/qwen3.6-35b:qwen,local-sglang/Mistral-Small-4:mistral'
+).split(',').map(s => {
+  const [id, sw = '-'] = s.split(':');
+  return { id, sw };
+});
 // MODELS_FILTER=mistral runs only that engine (e.g. clean redo of one half)
 const MODELS = process.env.MODELS_FILTER
   ? ALL_MODELS.filter(m => m.sw === process.env.MODELS_FILTER)
@@ -38,6 +43,7 @@ function residentStatus() {
   try { return execSync(`${SWITCH} status`, { encoding: 'utf8' }); } catch { return ''; }
 }
 async function ensureModel(sw) {
+  if (!SWITCH || sw === '-') return true;   // no mutex script: assume model is reachable
   if (new RegExp(`${sw}\\s*:\\s*RUNNING`).test(residentStatus())) return true;
   console.error(`[gpu] switching to ${sw} ...`);
   try { execSync(`${SWITCH} ${sw}`, { stdio: 'ignore' }); } catch (e) { console.error(`[gpu] switch failed: ${e.message}`); }

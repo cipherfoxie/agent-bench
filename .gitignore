@@ -5,3 +5,4 @@ results/raw/
 results/workdirs/
 *.log
 fixture/*/node_modules/
+results/NIGHT-REPORT.md

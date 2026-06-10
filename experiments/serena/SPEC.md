@@ -1,5 +1,7 @@
 # Serena Benchmark — Design Spec
 
+> **Design history.** This document is the original design. The implemented harness became a lean direct Node runner (see `README.md` + `runner/`) instead of the promptfoo integration sketched here; final methodology and numbers live in `results/` and the published articles.
+
 **Date:** 2026-06-09
 **Goal:** Measure whether the [Serena](https://github.com/oraios/serena) coding MCP actually improves *local* coding agents (self-hosted LLMs on a DGX Spark), and by how much, versus the agent's native tools. Publish a reproducible benchmark and a write-up on sovgrid.org.
 
@@ -27,8 +29,8 @@ Lineup × 5 tasks × N → 200 local runs + 30 reference runs = **230 runs total
 
 Each task has a clean starting state in the fixture repo and a deterministic pass/fail gate. Five tasks:
 
-1. **Cross-file rename (TypeScript)** — rename a function used in 3+ files. Gate: `rtk tsc` clean.
-2. **Add method + call site (Rust)** — add a method to a struct and a caller. Gate: `rtk cargo check` clean.
+1. **Cross-file rename (TypeScript)** — rename a function used in 3+ files. Gate: `tsc` clean.
+2. **Add method + call site (Rust)** — add a method to a struct and a caller. Gate: `cargo check` clean.
 3. **Fix moved import (Python)** — a symbol was moved; repair imports. Gate: `python -c "import <module>"` exits 0.
 4. **Find-all-callers + edit** — find every caller of symbol X and insert a log line at each. Gate: grep verifies exact count of edited call sites.
 5. **Safe delete** — remove an unused symbol without breaking anything. Gate: build clean AND symbol absent.
@@ -88,7 +90,7 @@ Structure: hook → setup (DGX Spark GB10, models, Serena) → methodology (+ re
 
 - Rules: no em-dash, anti_ai_patterns (VIBE.md), prepublish-check.sh gate, a11y audit, bidirectional crosslinks to existing LLM/Spark articles.
 - Mandatory links: Serena GitHub + docs, the claudemarketplaces.com MCP listing, the fixture repo.
-- Privacy: Stef/cipherfox/Tor leak grep before any push or publish.
+- Privacy: operator-identity leak grep before any push or publish.
 
 ## Out of scope (YAGNI)
 
