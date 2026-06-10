@@ -1,0 +1,58 @@
+[
+  {
+    "model": "local-qwen/qwen3.6-35b",
+    "arm": "baseline",
+    "n": 3,
+    "successRate": 100,
+    "meanToolCalls": 44.3,
+    "meanTokensIn": 173029,
+    "meanTokensOut": 3626,
+    "meanWallS": 73.8,
+    "meanFilesChanged": 16,
+    "meanLinesChanged": 62,
+    "regressionFreeRate": 100,
+    "lintCleanRate": 100
+  },
+  {
+    "model": "local-qwen/qwen3.6-35b",
+    "arm": "serena",
+    "n": 3,
+    "successRate": 100,
+    "meanToolCalls": 39.3,
+    "meanTokensIn": 199418,
+    "meanTokensOut": 3069,
+    "meanWallS": 79.7,
+    "meanFilesChanged": 16,
+    "meanLinesChanged": 62,
+    "regressionFreeRate": 100,
+    "lintCleanRate": 100
+  },
+  {
+    "model": "local-sglang/Mistral-Small-4",
+    "arm": "baseline",
+    "n": 3,
+    "successRate": 66.7,
+    "meanToolCalls": 24,
+    "meanTokensIn": 204260,
+    "meanTokensOut": 1203,
+    "meanWallS": 86.3,
+    "meanFilesChanged": 11.7,
+    "meanLinesChanged": 44.7,
+    "regressionFreeRate": 66.7,
+    "lintCleanRate": 66.7
+  },
+  {
+    "model": "local-sglang/Mistral-Small-4",
+    "arm": "serena",
+    "n": 3,
+    "successRate": 66.7,
+    "meanToolCalls": 23.7,
+    "meanTokensIn": 272767,
+    "meanTokensOut": 1178,
+    "meanWallS": 103,
+    "meanFilesChanged": 10.7,
+    "meanLinesChanged": 41.3,
+    "regressionFreeRate": 100,
+    "lintCleanRate": 100
+  }
+]
