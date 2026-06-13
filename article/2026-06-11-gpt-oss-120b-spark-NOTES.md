@@ -222,7 +222,7 @@ the reality is the whole point:
 5. **The real blocker: Docker pulls route through Tor.** The `nvcr` base (25 GB) stalls - layers
    download ("Download complete") but extraction/registration never finalizes; dockerd sits idle,
    no CPU, no journal, no I/O wait. The cause is **not** a docker bug: `daemon.json` pins
-   `"https-proxy": "socks5h://127.0.0.1:9050"` (Tor, deliberate security hardening - *do not touch*),
+   `"https-proxy": "socks5h://localhost:9050"` (Tor, deliberate security hardening - *do not touch*),
    so every registry pull tunnels through Tor. During a pull there are ~6 live connections to
    `:9050`. A 25 GB NGC image over Tor is the stall. **A full `docker` daemon restart did NOT fix
    it** (fresh pull re-wedged immediately), confirming it's the Tor path, not daemon state. And the
@@ -363,7 +363,7 @@ nvcr base onto the box (wait out Tor vs. one-time authorized bypass), then `spar
 
 Building `vllm-node-mxfp4` locally turned into its own multi-hour saga, and the root cause of every
 "mysterious Docker wedge" was the same: **`daemon.json` routes all Docker registry traffic through
-Tor** (`socks5h://127.0.0.1:9050`, deliberate hardening). Nothing else on the box does - `hf`,
+Tor** (`socks5h://localhost:9050`, deliberate hardening). Nothing else on the box does - `hf`,
 `curl`, `wget`, `apt` all go direct, which is why the 61 GB model weights flew in and only Docker
 image work crawled. Same line, different path. The wedge wore three different masks:
 
