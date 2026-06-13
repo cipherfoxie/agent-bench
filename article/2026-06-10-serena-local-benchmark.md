@@ -95,6 +95,14 @@ This is one language (TypeScript), small fixtures, and N of three to five, so re
 
 The harness is generic. Pointing it at another MCP or another skill is a config file, not new code, so the same method extends to the next tool worth checking.
 
+## Update (2026-06-13): the Serena maintainer responded
+
+After this went up, one of Serena's maintainers replied on the [discussion thread](https://github.com/oraios/serena/discussions/1573) with a fair criticism: the rename fixtures here are far too small to show where Serena actually saves tokens. In a real codebase the point is that a Serena-driven agent renames a symbol without reading the files it appears in at all, so the larger and more numerous those files, the more reading it avoids. On six-line fixtures there is nothing to avoid, so this setup structurally cannot surface that benefit.
+
+He is right, and it is worth stating plainly: this benchmark measures correctness under deterministic gates, not the token-reduction claim. The token deltas in the tables above are a property of these specific small tasks, not a verdict on Serena's economics at scale. The fair follow-up is a large-file, cross-referenced repo measured on the maintainer's terms, run as its own separate test rather than folded into these numbers. I have offered to use a repo he considers representative so the comparison is on Serena's home ground.
+
+The behavioral finding is on a different axis and stands on its own: on these tasks the strong model gained nothing while the weak model was rescued on the ambiguous rename. That is about whether the symbolic guardrail changes the outcome, which is independent of how many tokens it costs in a big repo.
+
 ## Reproduce it
 
 Repo: [agent-bench](https://github.com/cipherfoxie/agent-bench). Serena: [github.com/oraios/serena](https://github.com/oraios/serena), [marketplace listing](https://claudemarketplaces.com/mcp/oraios/serena). Raw runs and per-task summaries are under `results/`.
