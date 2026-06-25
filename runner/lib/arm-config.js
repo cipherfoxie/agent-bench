@@ -17,10 +17,16 @@ export function writeArmConfig(outPath, arm, workdir = '') {
     permission: g.permission || {},   // preserve auto-approve behavior for edits
     mcp,
   };
-  // Mistral-Small-4 has a 32768 context; opencode otherwise requests 32000 completion
-  // tokens (input + 32000 > 32768 -> reject). Cap output so requests fit.
-  const ms = cfg.provider?.['local-sglang']?.models?.['Mistral-Small-4'];
-  if (ms) ms.limit = { context: 32768, output: 4096 };
+  // Any model with a small context window needs its completion capped, else
+  // opencode's default 32000-token completion request overflows it (input +
+  // 32000 > context -> reject). Provider-agnostic; current local models all run
+  // >=65536 so this is a no-op for them, but keeps short-context models safe.
+  for (const prov of Object.values(cfg.provider || {})) {
+    for (const m of Object.values(prov?.models || {})) {
+      const ctx = m?.limit?.context;
+      if (ctx && ctx <= 33000) m.limit = { context: ctx, output: 4096 };
+    }
+  }
   writeFileSync(outPath, JSON.stringify(cfg, null, 2), 'utf8');
   return cfg;
 }

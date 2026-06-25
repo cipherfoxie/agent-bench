@@ -12,12 +12,12 @@ const SWITCH = process.env.SWITCH_CMD || '';
 // Models as opencode provider ids. Override: MODELS="provider/model:engine,provider/model2:engine2"
 // where :engine is the SWITCH_CMD argument ('-' or omitted = no switching needed).
 const ALL_MODELS = (process.env.MODELS ||
-  'local-qwen/qwen3.6-35b:qwen,local-sglang/Mistral-Small-4:mistral'
+  'local-qwen/qwen3.6-35b:qwen,local-glm/glm-4.7-flash:glm'
 ).split(',').map(s => {
   const [id, sw = '-'] = s.split(':');
   return { id, sw };
 });
-// MODELS_FILTER=mistral runs only that engine (e.g. clean redo of one half)
+// MODELS_FILTER=glm runs only that engine (e.g. clean redo of one half)
 const MODELS = process.env.MODELS_FILTER
   ? ALL_MODELS.filter(m => m.sw === process.env.MODELS_FILTER)
   : ALL_MODELS;
